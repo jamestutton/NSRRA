@@ -1,0 +1,31 @@
+
+
+
+        
+# def BuildClubSummary(group_df,club_name:str ="Stoke FIT"):
+#     Group = group_df.columns[2]
+#     msg = f"{Group}: "
+    
+
+#     filtered_df = group_df[group_df['Club'].str.contains(club_name, case=False)]
+#     if filtered_df.shape[0] > 0:
+#         # Loop over each row
+#         for index, row in filtered_df.iterrows():
+#             name = row[2]
+#             msg +=(f"{name} {add_th(index+1)}, ")
+#         out = f"{msg[:-2]} out of {group_df.shape[0]}"
+#         print(out)
+#     else:
+#         raise ValueError
+
+
+# def StokeFITSummary():
+#     sf = nsrra.clubs.clubs["Stoke FIT"]
+#     print(sf)
+#     print(sf.MaleTeam)
+#     print(sf.FemaleTeam)
+    
+
+# def TeamPointsSummary():
+#     #nsrra_teams.TeamTable()
+#     nsrra.clubs.AutoTeamTable()
