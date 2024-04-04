@@ -184,7 +184,7 @@ class NSRRA(BaseModel):
         
             msg = f"{self.suffix}{self.name}: "
             for pos, o_member in self.members.items():
-                msg +=(f"{o_member.name} {pos}, ")
+                msg +=(f"{o_member.name} {self.add_th(pos)}({o_member.avg}/{o_member.points}), ")
             out = f"{msg[:-2]} out of {len(self.members)}"
             print(out)
 
@@ -193,10 +193,10 @@ class NSRRA(BaseModel):
             msg = f"{self.suffix}{self.name}: "
             for pos, o_member in self.members.items():
                 if o_member.club == club:
-                    msg +=(f"{o_member.name} {self.add_th(pos)}, ")
+                    msg +=(f"{o_member.name} {self.add_th(pos)}({o_member.avg}/{o_member.points}), ")
                     hits+=1
                 elif o_member.second_claim == club:
-                    msg +=(f"{o_member.name} {self.add_th(pos)}, ")
+                    msg +=(f"{o_member.name} {self.add_th(pos)}({o_member.avg}/{o_member.points}), ")
                     hits+=1
             out = f"{msg[:-2]} out of {len(self.members)}"
             return(hits,out)       
@@ -256,7 +256,7 @@ class NSRRA(BaseModel):
         
 
     def ClubSummary(self,club:str="Stoke FIT"):  
-        
+        print(f"Latest NSRRA Member States for {club}")
         self.groups.ClubSummary(club)
         self.age_groups.ClubSummary(club)
     
@@ -282,6 +282,7 @@ class NSRRA(BaseModel):
                     name = row[2]
                     points = row[0]
                     races = row[1]
+                    avg = row[5]
                     try: 
                         if pd.isna(row[4]):
                             club = "UNKNOWN"
@@ -295,7 +296,7 @@ class NSRRA(BaseModel):
 
                     
                     if name not in self.members:
-                        self.AddMember(self.Member(name=name,points=points,sex=sex,races=races,club=o_team.name,group=o_group.name))
+                        self.AddMember(self.Member(name=name,points=points,avg=avg,sex=sex,races=races,club=o_team.name,group=o_group.name))
                     member = self.members[name]
                     
                     
@@ -325,6 +326,7 @@ class NSRRA(BaseModel):
                     name = row[2]
                     points = row[0]
                     races = row[1]
+                    avg = row[5]
                     try: 
                         if pd.isna(row[4]):
                             club = "UNKNOWN"
@@ -338,7 +340,7 @@ class NSRRA(BaseModel):
 
                     
                     if name not in self.members:
-                        self.AddMember(self.Member(name=name,points=points,races=races,club=o_team.name,age_group=o_group.name))
+                        self.AddMember(self.Member(name=name,points=points,avg=avg,races=races,club=o_team.name,age_group=o_group.name))
                     member = self.members[name]
                     member.age_group = age_Group
                     
@@ -401,6 +403,7 @@ for temp_df in dfs:
 #print(nsrra)
 #nsrra.ClubSummary("Trentham RC")
 #nsrra.ClubSummary("UNKNOWN")
+
 nsrra.ClubSummary()
 nsrra.ClubTables()
 # StokeFITSummary()
