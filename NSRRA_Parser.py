@@ -279,14 +279,21 @@ class NSRRA(BaseModel):
         for index, row in group_df.iterrows():
                 
                 try:
-                    club = row[4]
+                    name = row[2]
+                    points = row[0]
+                    races = row[1]
+                    try: 
+                        if pd.isna(row[4]):
+                            club = "UNKNOWN"
+                        else:
+                            club = row[4]
+                    except Exception as ex:
+                        club = "UNKNOWN_EX"
                     if club not in self.clubs.clubs:
                         self.clubs.AddTeam(self.Club(name=club))
                     o_team=self.clubs.clubs[club]
 
-                    name = row[2]
-                    points = row[0]
-                    races = row[1]
+                    
                     if name not in self.members:
                         self.AddMember(self.Member(name=name,points=points,sex=sex,races=races,club=o_team.name,group=o_group.name))
                     member = self.members[name]
@@ -315,14 +322,21 @@ class NSRRA(BaseModel):
             
             
                 try:
-                    club = row[4]
+                    name = row[2]
+                    points = row[0]
+                    races = row[1]
+                    try: 
+                        if pd.isna(row[4]):
+                            club = "UNKNOWN"
+                        else:
+                            club = row[4]
+                    except Exception as ex:
+                        club = "UNKNOWN_EX"
                     if club not in nsrra.clubs.clubs:
                         nsrra.clubs.AddTeam(self.Club(name=club))
                     o_team=self.clubs.clubs[club]
 
-                    name = row[2]
-                    points = row[0]
-                    races = row[1]
+                    
                     if name not in self.members:
                         self.AddMember(self.Member(name=name,points=points,races=races,club=o_team.name,age_group=o_group.name))
                     member = self.members[name]
@@ -386,8 +400,9 @@ for temp_df in dfs:
         pass 
 #print(nsrra)
 #nsrra.ClubSummary("Trentham RC")
+#nsrra.ClubSummary("UNKNOWN")
 nsrra.ClubSummary()
-#nsrra.ClubTables()
+nsrra.ClubTables()
 # StokeFITSummary()
 # TeamPointsSummary()
         
