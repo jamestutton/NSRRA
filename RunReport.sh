@@ -14,5 +14,5 @@ else
     poetry config virtualenvs.in-project true
     poetry install -vv
 fi
-pip install -r requirements.txt
+pip install -r requirements.txt >> /dev/null
 python3 ./NSRRA_Parser.py

@@ -13,7 +13,7 @@ root = logging.getLogger()
 root.setLevel(logging.INFO)
 
 handler = logging.StreamHandler(sys.stdout)
-handler.setLevel(logging.INFO)
+handler.setLevel(logging.WARNING)
 formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 handler.setFormatter(formatter)
 root.addHandler(handler)
@@ -296,7 +296,8 @@ class NSRRA(BaseModel):
                     o_team.AddMember(member)
                     o_group.AddPositionedMember(index+1,member)
                 except Exception as ex:
-                    logger.warning(f"Cant add {name} as no Team {ex}",stack_info=True)
+                    logger.warning(f"Cant add {name} to {o_group}")
+                    logger.debug(f"{ex}",stack_info=True)
         logger.info(f"{o_group} done. ")
 
     def AgeGroupPointsCalculator(self,group_df):
@@ -305,7 +306,7 @@ class NSRRA(BaseModel):
          
 
         if age_Group not in self.age_groups.groups:   
-            o_group = self.AgeGroup(name=age_Group,suffix="")
+            o_group = self.AgeGroup(name=age_Group)
             self.age_groups.Add(o_group)     
         logger.info(f"{o_group} processing.... ")    
         for index, row in group_df.iterrows():
@@ -331,7 +332,8 @@ class NSRRA(BaseModel):
                     o_team.AddMember(member)
                     o_group.AddPositionedMember(index+1,member)
                 except Exception as ex:
-                    logger.warning(f"Cant add {name} as no Team {ex}",stack_info=True)
+                    logger.warning(f"Cant add {name} to {o_group}")
+                    logger.warning(f"{ex}",stack_info=True)
         logger.info(f"{o_group} done. ")
 
   
@@ -385,7 +387,7 @@ for temp_df in dfs:
 #print(nsrra)
 #nsrra.ClubSummary("Trentham RC")
 nsrra.ClubSummary()
-nsrra.ClubTables()
+#nsrra.ClubTables()
 # StokeFITSummary()
 # TeamPointsSummary()
         
