@@ -30,7 +30,7 @@ SecondClaims = {
 class NSRRA(BaseModel):
     class Member(BaseModel):
         name: str
-        sex: str
+        sex: str =""
         points: int = 0
         races: int = 0
         avg: float = 0
@@ -42,6 +42,9 @@ class NSRRA(BaseModel):
         def second_claim(self):
             if self.name in SecondClaims:
                 return  SecondClaims[self.name]
+
+        def index(self):
+            return f"{self.name}"
 
     class Club(BaseModel):
         class ClubStats(BaseModel):
@@ -112,7 +115,7 @@ class NSRRA(BaseModel):
             return top_scorers
 
         def AddMember(self,team_member:"NSRRA.Member"):
-            self.members[team_member.name] = team_member
+            self.members[team_member.index] = team_member
 
     class Clubs(BaseModel):
         clubs: dict[str,"NSRRA.Club"] = {}
@@ -199,7 +202,16 @@ class NSRRA(BaseModel):
                     msg +=(f"{o_member.name} {self.add_th(pos)}({o_member.avg}/{o_member.points}), ")
                     hits+=1
             out = f"{msg[:-2]} out of {len(self.members)}"
-            return(hits,out)       
+            return(hits,out)     
+
+        def ClubSummaryTable(self,club:str="Stoke FIT") -> tuple[int,str]:
+            hits=0  
+            msg = f"{self.suffix}{self.name} (out of {len(self.members)}):"
+            for pos, o_member in self.members.items():
+                if o_member.club == club or o_member.second_claim == club:
+                    msg +=(f"\n  {self.add_th(pos)} {o_member.name} {o_member.points} Pts,{o_member.avg} Avg,{o_member.races} Rs")
+                    hits+=1
+            return(hits,msg)                
 
         def add_th(self,num):
             if 11 <= num <= 13:
@@ -225,9 +237,9 @@ class NSRRA(BaseModel):
 
         
     class Groups(BaseModel):
-        groups: dict[str,"NSRRA.Group"] = {}
+        groups: dict[str,"NSRRA.BaseGroup"] = {}
 
-        def Add(self,group:"NSRRA.Group"):
+        def Add(self,group:"NSRRA.BaseGroup"):
             self.groups[group.name] = group
 
         def Summary(self):
@@ -242,6 +254,12 @@ class NSRRA(BaseModel):
                 if hits >= 1:
                     print(msg)
 
+        def ClubSummaryTable(self,club:str="Stoke FIT"):  
+            groups = self.groups.values()
+            for group in groups:
+                hits,msg = group.ClubSummaryTable(club)            
+                if hits >= 1:
+                    print(msg)
 
 
 
@@ -252,13 +270,34 @@ class NSRRA(BaseModel):
     members: dict[str,"NSRRA.Member"] = {}
 
     def AddMember(self,member:"NSRRA.Member"):
-        self.members[member.name] = member
+        self.members[member.index] = member
         
 
     def ClubSummary(self,club:str="Stoke FIT"):  
-        print(f"Latest NSRRA Member States for {club}")
+        print(f"#############################################")
+        print(f"Latest NSRRA Member Stats for {club}")
+        print(f"#############################################")
+        print("------------------")
+        print("NSRRA Groups:")
+        print("------------------")
         self.groups.ClubSummary(club)
+        print("------------------")
+        print("Age Groups:")
+        print("------------------")
         self.age_groups.ClubSummary(club)
+
+    def ClubSummaryTable(self,club:str="Stoke FIT"):  
+        print(f"#############################################")
+        print(f"Latest NSRRA Member Stats for {club}")
+        print(f"#############################################")
+        print("------------------")
+        print("NSRRA Groups:")
+        print("------------------")
+        self.groups.ClubSummaryTable(club)
+        print("------------------")
+        print("Age Groups:")
+        print("------------------")
+        self.age_groups.ClubSummaryTable(club)        
     
     def ClubTables(self):
         self.clubs.AutoTeamTable()
@@ -294,10 +333,10 @@ class NSRRA(BaseModel):
                         self.clubs.AddTeam(self.Club(name=club))
                     o_team=self.clubs.clubs[club]
 
-                    
-                    if name not in self.members:
-                        self.AddMember(self.Member(name=name,points=points,avg=avg,sex=sex,races=races,club=o_team.name,group=o_group.name))
-                    member = self.members[name]
+                    member = self.Member(name=name,points=points,avg=avg,sex=sex,races=races,club=o_team.name,group=o_group.name)
+                    if member.index not in self.members:
+                        self.AddMember(member)
+                    member = self.members[member.index]
                     
                     
                     logger.debug(f"NAME {name} processing.... ")
@@ -339,9 +378,10 @@ class NSRRA(BaseModel):
                     o_team=self.clubs.clubs[club]
 
                     
-                    if name not in self.members:
-                        self.AddMember(self.Member(name=name,points=points,avg=avg,races=races,club=o_team.name,age_group=o_group.name))
-                    member = self.members[name]
+                    member = self.Member(name=name,points=points,avg=avg,races=races,club=o_team.name,group=o_group.name)
+                    if member.index not in self.members:
+                        self.AddMember(member)
+                    member = self.members[member.index]
                     member.age_group = age_Group
                     
                     logger.debug(f"NAME {name} processing.... ")
@@ -405,7 +445,7 @@ for temp_df in dfs:
 #nsrra.ClubSummary("UNKNOWN")
 
 nsrra.ClubSummary()
-nsrra.ClubTables()
-# StokeFITSummary()
-# TeamPointsSummary()
+nsrra.ClubSummaryTable()
+# Club Points Tables
+# nsrra.ClubTables()
         
